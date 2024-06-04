@@ -1,47 +1,38 @@
 {% extends 'base.html'%} 
-{% load static%} 
+{% load static %} 
 
 {% block body%}
+  <h3>{{ produto.nome }}</h3>
 
-<h3>{{ produto.nome }}</h3>
+  {% if tem_estoque %}
+    <img src="{{ produto.imagem.url }}" alt="produto" width="300" height="400" />
+    <p>Preço: {{ produto.preco }}</p>
+    <p>Produto: {{ produto.nome }}</p>
 
-{% if tem_estoque %}
+    {% if cor_selecionada %} 
+      Cor: {{ cor_selecionada.nome }} 
+    {% endif%} 
 
-<img src="{{ produto.imagem.url }}" alt="produto" width="300" height="400">
-<p>Preço: {{ produto.preco }}</p>
-<p>Produto: {{ produto.nome }}</p>
+    {% for cor in cores %}
+      <a href="{% url 'ver_produto' produto.id cor.id%}">
+        <i class="fa-solid fa-circle" style="color: {{ cor.codigo }};"></i>
+      </a>
+    {% endfor %} 
+    {% if tamanhos %}
+      <form action="{% url 'adicionar_carrinho' produto.id %}" method="post">
+        {% csrf_token %}
 
-{% if cor_selecionada %}
-Cor: {{ cor_selecionada.nome }}
-{% endif%}
+        <p>Selecione o tamanho</p>
+        {% for tamanho in tamanhos %}
+          <input type="radio" name="tamanho" value="{{ tamanho }}" />
+          <label for="{{ tamanho }}">{{ tamanho }}</label>
+        {% endfor %}
+        <input type="hidden" name="cor" , value="{{ cor_selecionada.id }}" />
+        <button type="submit">Adicionar ao Carrinho</button>
+      </form>
+    {% endif %} 
 
-{% for cor in cores %}
-<a href="{% url 'ver_produto' produto.id cor.id%}">
-    <i class="fa-solid fa-circle" style="color: {{ cor.codigo }};"></i>
-</a>
-{% endfor %}
-
-{% if tamanhos %}
-<form action="{% url 'adicionar_carrinho' produto.id %}" method="post">
-    {% csrf_token %}
-
-    <p>Selecione o tamanho</p>
-    {% for tamanho in tamanhos %}
-    <input type="radio" name="tamanho" value="{{ tamanho }}">
-    <label for="{{ tamanho }}">{{ tamanho }}</label>
-
-    <input type="hidden" name="cor", value="{{ cor_selecionada.id }}">
-    <button type="submit">Adicionar ao Carrinho</button>
-    {% endfor %}
-
-</form>
-{% endif %}
-
-
-{% else %}
-
-<p>Produto fora de estoque</p>
-
-{% endif %}
-
+  {% else %}
+    <p>Produto fora de estoque</p>
+  {% endif %} 
 {% endblock%}

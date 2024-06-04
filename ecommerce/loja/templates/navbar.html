@@ -1,7 +1,16 @@
+{% load static %}
+
 <nav>
   Reserva
   <a href="{% url 'loja' %}">Loja</a>
   <a href="{% url 'login' %}">Login</a>
   <a href="{% url 'minhaconta' %}">Minha Conta</a>
   <a href="{% url 'carrinho' %}">Carrinho</a>
+  <img
+    src="{% static 'imagens/carrinho.png'%}"
+    alt="carrinho_compras"
+    width="30"
+    height="30"
+  />
+  {{ quantidade_produtos_carrinho }}
 </nav>

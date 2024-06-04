@@ -9,6 +9,10 @@ class Cliente (models.Model):
     id_sessao = models.CharField(max_length=200, null=True, blank=True)
     usuario = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return str(self.email)
+
+
 # ex: Masculino, Feminino...
 class Categoria(models.Model):
     nome = models.CharField(max_length=200, null=True, blank=True)
@@ -73,11 +77,36 @@ class Pedido(models.Model):
     endereco = models.ForeignKey(Endereco, null=True, blank=True, on_delete=models.SET_NULL)
     data_finalizacao = models.DateTimeField(null=True, blank=True)
 
+    def __str__(self) -> str:
+        return f"Cliente: {self.cliente} - id_pedido: {self.id} - Finalizado: {self.finalizado}"
+
+    @property
+    def quantidade_total(self):
+        itens_pedido = ItemPedido.objects.filter(pedido__id=self.id)
+        quantidade = sum(
+            [item.quantidade for item in itens_pedido]
+        )
+        return quantidade
+    
+    def preco_total(self):
+        itens_pedido = ItemPedido.objects.filter(pedido__id=self.id)
+        preco = sum(
+            [item.preco_total for item in itens_pedido]
+        )
+        return preco
+
 
 class ItemPedido(models.Model):
     item_estoque = models.ForeignKey(ItemEstoque, null=True, blank=True, on_delete=models.SET_NULL)
     quantidade = models.IntegerField(default=0)
     pedido = models.ForeignKey(Pedido, null=True, blank=True, on_delete=models.SET_NULL)
+
+    def __str__(self) -> str:
+        return f"Id_pedido: {self.id} - Produto: {self.item_estoque.produto} - Tamanho: {self.item_estoque.tamanho} -Cor: {self.item_estoque.cor.nome}"
+
+    @property #utilizado para chamar a funcao sem precisar usar () no final, dessa forma é possivel utiliza-la no html
+    def preco_total(self):
+        return self.quantidade * self.item_estoque.produto.preco
 
 
 class Banner(models.Model):
