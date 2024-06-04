@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from .models import *
 import uuid
+from .utilidades import filtrar_produtos, preco_minimo_maximo
+
 
 def homepage(request):
     banners = Banner.objects.filter(ativo=True)
@@ -9,13 +11,31 @@ def homepage(request):
 
 
 
-def loja(request, nome_categoria=None):
+def loja(request, filtro=None):
     produtos = Produto.objects.filter(ativo=True)
+    produtos = filtrar_produtos(produtos, filtro)
     
-    if nome_categoria:
-        produtos = Produto.objects.filter(categoria__nome=nome_categoria)
-    
-    context = {"produtos": produtos}
+    # aplica os filtros do formulario lateral
+    if request.method == "POST":
+        dados = request.POST.dict()
+        # verifica quais dados vieram da request
+        produtos = produtos.filter(preco__gte=dados.get('preco_minimo'), preco__lte=dados.get('preco_maximo'))
+        if 'tamanho' in dados:
+            itens = ItemEstoque.objects.filter(produto__in=produtos, tamanho=dados.get('tamanho'))
+            ids_produtos = itens.values_list('produto', flat=True).distinct()
+            produtos = produtos.filter(id__in=ids_produtos)
+        if 'tipo' in dados:
+            produtos = produtos.filter(tipo__slug=dados.get('tipo'))
+        if 'categoria' in dados:
+            produtos = produtos.filter(categoria__slug=dados.get('categoria'))
+
+    itens = ItemEstoque.objects.filter(quantidade__gt=0, produto__in=produtos)
+    tamanhos = itens.values_list('tamanho', flat=True).distinct()
+    ids_categorias = produtos.values_list('categoria', flat=True).distinct()
+    categorias = Categoria.objects.filter(id__in=ids_categorias)
+    minimo, maximo = preco_minimo_maximo(produtos)
+        
+    context = {"produtos": produtos, "minimo": minimo, "maximo": maximo, "tamanhos": tamanhos, "categorias": categorias}
     return render(request, 'loja.html', context)
 
 
@@ -127,8 +147,42 @@ def carrinho(request):
 
 
 def checkout(request):
-    return render(request, 'checkout.html')
+    if request.user.is_authenticated:
+        cliente = request.user.cliente
+    else:
+        # pega o cliente que nao fez login, gerando um id da sessao e adicionando nos cookies do navegador
+        if request.COOKIES.get('id_sessao'):
+            id_sessao = request.COOKIES.get('id_sessao')
+            cliente, criado = Cliente.objects.get_or_create(id_sessao=id_sessao)
+        else:
+            return redirect('loja')
+    
+    pedido, criado = Pedido.objects.get_or_create(cliente=cliente, finalizado=False)
+    enderecos = Endereco.objects.filter(cliente=cliente)
+    context = {"pedido": pedido, "enderecos": enderecos}
+    return render(request, 'checkout.html', context)
 
+
+def adicionar_endereco(request):
+    if request.method == "POST":
+        
+        if request.user.is_authenticated:
+            cliente = request.user.cliente
+        else:
+            if request.COOKIES.get('id_sessao'):
+                id_sessao = request.COOKIES.get('id_sessao')
+                cliente, criado = Cliente.objects.get_or_create(id_sessao=id_sessao)
+            else:
+                return redirect('loja')
+        dados = request.POST.dict()
+        endereco = Endereco.objects.create(cliente=cliente, rua=dados.get('rua'), 
+                                        numero=int(dados.get('numero')), estado=dados.get('estado'), 
+                                        cidade=dados.get('cidade'), cep=dados.get('cep'), complemento=dados.get('complemento'))
+        endereco.save()
+        return redirect('checkout')
+    else:
+        context = {}
+        return render(request, 'adicionar_endereco.html', context)
 
 
 def minhaconta(request):

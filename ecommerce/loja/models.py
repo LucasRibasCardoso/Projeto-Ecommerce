@@ -16,6 +16,7 @@ class Cliente (models.Model):
 # ex: Masculino, Feminino...
 class Categoria(models.Model):
     nome = models.CharField(max_length=200, null=True, blank=True)
+    slug = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return str(self.nome)
@@ -23,7 +24,8 @@ class Categoria(models.Model):
 # ex: Bermuda, Camiseta...
 class Tipo(models.Model):
     nome = models.CharField(max_length=200, null=True, blank=True)
-
+    slug = models.CharField(max_length=200, null=True, blank=True)
+    
     def __str__(self):
         return str(self.nome)
 
@@ -68,6 +70,8 @@ class Endereco(models.Model):
     estado = models.CharField(max_length=200, null=True, blank=True)
     cliente = models.ForeignKey(Cliente, null=True, blank=True, on_delete=models.SET_NULL)
 
+    def __str__(self) -> str:
+        return f"{self.cliente} - {self.rua} - {self.cidade} - {self.cep}"
 
 
 class Pedido(models.Model):
