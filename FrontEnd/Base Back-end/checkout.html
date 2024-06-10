@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+
+<h3>Checkout</h3>
+<a href="{% url 'carrinho' %}">Voltar para o Carrinho</a>
+<p>Preço: {{ ordem.preco_total }}</p>
+<p>Quantidade Itens: {{ ordem.quantidade_total }}</p>
+
+{% for item in items %}
+<div style="display: flex">
+    <img src="{{ item.produto.url_imagem }}" width="50", height="75">
+    <p>Produto: {{ item.produto.nome }}</p>
+    <p>Preço Unitário: R${{ item.produto.preco }}</p>
+    <p>Quantidade: {{ item.quantidade }}</p>
+    <p>Total Produto: {{ item.preco_total }}</p>
+</div>
+{% endfor %}
+
+<h3>Finalizar Compra</h3>
+<form action="{% url 'finalizar_pagamento' ordem.id %}" method="post">
+    {% csrf_token %}
+    <input name="endereco" type="text" placeholder="Endereço">
+    <input name="numero" type="number" placeholder="Número">
+    <input name="complemento" type="text" placeholder="Complemento">
+    <input name="cep" type="number" placeholder="CEP">
+    <input name="cidade" type="text" placeholder="Cidade">
+    <input name="uf" type="text" placeholder="UF">
+    {% if not request.user.is_authenticated %}
+    <hr>
+    <input name="email" type="email" placeholder="email">
+    {% endif %}
+    <hr>
+    <input type="radio" name="forma_pagamento" value="cartao_credito">
+    <label for="cartao_credito">Cartão de Crédito</label>
+    <input type="radio" name="forma_pagamento" value="boleto">
+    <label for="boleto">Boleto</label>
+    <input type="radio" name="forma_pagamento" value="pix">
+    <label for="pix">PIX</label>
+    <input type="hidden" name="total" value="{{ ordem.preco_total }}">
+    <button type="submit">Finalizar Pedido - R${{ ordem.preco_total }}</button>
+</form>
+{% endblock %}

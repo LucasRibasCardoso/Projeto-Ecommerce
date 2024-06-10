@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<h3>Carrinho</h3>
+<p>Preço: {{ ordem.preco_total }}</p>
+<p>Quantidade Itens: {{ ordem.quantidade_total }}</p>
+
+{% for item in items %}
+<div style="display: flex">
+    <img src="{{ item.produto.url_imagem }}" width="50", height="75">
+    <p>Produto: {{ item.produto.nome }}</p>
+    <p>Preço Unitário: R${{ item.produto.preco }}</p>
+    <p>Quantidade: {{ item.quantidade }}</p>
+    <p>Total Produto: {{ item.preco_total }}</p>
+    <form action="{% url 'adicionar_carrinho' item.produto.id %}" method="post">
+        {% csrf_token %}
+        <button>↑</button>
+    </form>
+    <form action="{% url 'remover_carrinho' item.produto.id %}" method="post">
+        {% csrf_token %}
+        <button>↓</button>
+    </form>
+</div>
+{% endfor %}
+{% if ordem.quantidade_total > 0 %}
+<a href="{% url 'checkout' %}">Finalizar Compra</a>
+{% endif %}
+{% endblock %}

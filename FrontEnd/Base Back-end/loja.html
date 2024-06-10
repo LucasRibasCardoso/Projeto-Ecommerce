@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<h3>Loja</h3>
+
+<div style="display: flex;">
+    <form method="POST" action="{% url 'loja' %}">
+        {% csrf_token %}
+        <h4>Filtrar</h4>
+        <p>Faixa de Preço</p>
+        <input name="minimo" value="{{ minimo }}">
+        <input name="maximo" value="{{ maximo }}">
+        <hr>
+        <p>Categoria</p>
+        {% for categoria_filtro in categorias_filtro %}
+            <input type="radio" name="categoria" value="{{ categoria_filtro }}">
+            <label for="{{ categoria_filtro }}">{{ categoria_filtro }}</label>
+        {% endfor %}
+        <hr>
+        <p>Tipo</p>
+        {% for tipo_filtro in tipos_filtro %}
+            <input type="radio" name="tipo" value="{{ tipo_filtro }}">
+            <label for="{{ tipo_filtro }}">{{ tipo_filtro }}</label>
+        {% endfor %}
+        <hr>
+        <button type="submit">Aplicar Filtros</button>
+    </form>
+    <div>
+        Ordenar por:
+        <ul>
+            <li><a class="item-ordenar" name="menor-preco" href="#">Menor Preço</a></li>
+            <li><a class="item-ordenar" name="maior-preco" href="#">Maior Preço</a></li>
+            <li><a class="item-ordenar" name="mais-vendido" href="#">Mais Vendido</a></li>
+        </ul>
+        {% for produto in produtos %}
+            <div>
+                <img src="{{ produto.url_imagem }}" width="300" height="450">
+                <p>{{ produto.nome }}</p>
+                <p>R${{ produto.preco }}</p>
+                <p>Ganhe 20% de Cashback</p>
+                <form action="{% url 'adicionar_carrinho' produto.id %}" method="post">
+                    {% csrf_token %}
+                    <button>Adicionar ao Carrinho</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

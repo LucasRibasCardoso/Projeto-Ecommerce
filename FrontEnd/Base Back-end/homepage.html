@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<h3>Reserva</h3>
+
+<div>
+    {% for banner in banners %}
+        <div>
+            <a href="{% url 'homepage' %}{{ banner.link_destino }}">
+                <img src="{{ banner.url_imagem }}">
+            </a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

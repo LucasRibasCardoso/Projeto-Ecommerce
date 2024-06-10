@@ -1,0 +1,25 @@
+{% load static %}
+<nav style="display: flex;">
+    <div>
+        <a href="{% url 'loja' %}">Reserva</a>
+    </div>
+    <div>
+        <button>Login</button>
+        <a href="{% url 'carrinho' %}">
+            <img src="{% static 'images/carrinho.png' %}" height="30" width="30">
+            <div id="total-carrinho">{{ quantidade_itens_carrinho }}</div>
+        </a>
+    </div>
+    <div>
+        Categorias
+        {% for categoria in categorias %}
+        <div>
+            <a href="{% url 'loja' %}{{ categoria.nome }}">{{ categoria.nome }}:</a>
+            {% for tipo in tipos %}
+                <a href="{% url 'loja' %}{{ categoria.nome }}-{{ tipo.nome }}">{{ tipo.nome }}</a>
+            {% endfor %}
+            <hr>
+        </div>
+        {% endfor %}
+    </div>
+</nav>
