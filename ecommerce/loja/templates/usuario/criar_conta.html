@@ -1,0 +1,37 @@
+{% extends 'base.html'%} 
+{% load static%} 
+{% block body%}
+
+<h3>Preencha seus dados para criar uma conta</h3>
+
+{% if erro == 'preenchimento' %}
+    <p>Preencha com informações válidas</p>
+{% endif %}
+
+{% if erro == 'email_invalido' %}
+    <p>Seu e-mail está inválido, tente novamente com outro e-mail</p>
+{% endif%}
+
+{% if erro == 'usuario_existente' %}
+    <p>Já existe um usuário com esse e-mail! <a href="{% url 'login'%}">faça login</a></p>
+{% endif %}
+
+{% if erro == 'senhas_diferentes' %}
+    <p>Senha e confirmação foram preenchidas com diferentes informações. Tente novamente </p>
+{% endif %}
+
+
+<form action="{% url 'criar_conta' %}" method="post">
+    {% csrf_token %}
+    
+    <input type="email" name="email" placeholder="Dígite seu e-mail">
+    <input type="password" name="senha" placeholder="Dígite sua senha">
+    <input type="password" name="confirmacao_senha" placeholder="Confirme sua senha">
+    <button type="submit">Entrar</button>
+</form>
+
+<a href="{% url 'fazer_login' %}">Já tem um conta? Fazer login</a>
+
+
+
+{% endblock%}

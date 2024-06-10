@@ -9,7 +9,19 @@
 <p>Quantidade Total: {{ pedido.quantidade_total}}</p>
 <p>Total do Pedido: R${{ pedido.preco_total }}</p>
 
-<form action="" method="post">
+{% if erro == 'preco' %}
+    <p>Preço dos produtos estão errados. Tente novamente!</p>
+{% endif %}
+
+{% if erro == 'endereco' %}
+    <p>Selecione um endereço para entrega</p>
+{% endif %}
+
+{% if erro == 'email' %}
+    <p>Preencha um email para pordemos concluir a compra</p>
+{% endif %}
+
+<form action="{% url 'finalizar_pedido' pedido.id %}" method="post">
     {% csrf_token %}
     <h3>Selecione um endereço</h3>
     <a href="{% url 'adicionar_endereco' %}">Adicionar endereço de entraga</a>

@@ -10,4 +10,5 @@ admin.site.register(ItemEstoque),
 admin.site.register(Pedido),
 admin.site.register(ItemPedido),
 admin.site.register(Banner),
-admin.site.register(Cor)
+admin.site.register(Cor),
+admin.site.register(Pagamento)
