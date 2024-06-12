@@ -179,6 +179,9 @@ def finalizar_pedido(request, id_pedido):
 
         if total != float(pedido.preco_total):
             erro = "preco"
+        
+        if not 'endereco' in dados:
+            erro = 'endereco'
 
         else:
             id_endereco = dados.get('endereco')
