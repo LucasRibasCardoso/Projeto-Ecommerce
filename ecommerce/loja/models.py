@@ -105,6 +105,11 @@ class Pedido(models.Model):
         )
         return preco
 
+    @property
+    def itens(self):
+        itens_pedido = ItemPedido.objects.filter(pedido__id=self.id)
+        return itens_pedido
+
 
 class ItemPedido(models.Model):
     item_estoque = models.ForeignKey(ItemEstoque, null=True, blank=True, on_delete=models.SET_NULL)
@@ -112,7 +117,7 @@ class ItemPedido(models.Model):
     pedido = models.ForeignKey(Pedido, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self) -> str:
-        return f"Id_pedido: {self.id} - Produto: {self.item_estoque.produto} - Tamanho: {self.item_estoque.tamanho} -Cor: {self.item_estoque.cor.nome}"
+        return f"Id pedido: {self.pedido.id} - Produto: {self.item_estoque.produto.nome}, {self.item_estoque.tamanho}, {self.item_estoque.cor.nome}"
 
     @property #utilizado para chamar a funcao sem precisar usar () no final, dessa forma é possivel utiliza-la no html
     def preco_total(self):

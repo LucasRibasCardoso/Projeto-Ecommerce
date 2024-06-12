@@ -67,7 +67,8 @@ def ver_produto(request, id_produto, id_cor=None):
             itens_estoque = ItemEstoque.objects.filter(produto=produto, quantidade__gt=0, cor__id=id_cor)
             tamanhos = {item.tamanho for item in itens_estoque}
 
-    context = {"produto": produto, "tem_estoque": tem_estoque, "cores": cores, "tamanhos": tamanhos, "cor_selecionada": cor_selecionada}
+    similares = Produto.objects.filter(categoria__id=produto.categoria.id, tipo__id=produto.tipo.id).exclude(id=produto.id)[:4]
+    context = {"produto": produto, "tem_estoque": tem_estoque, "cores": cores, "tamanhos": tamanhos, "cor_selecionada": cor_selecionada, "similares": similares}
     return render(request, 'ver_produto.html', context=context)
 
 
@@ -308,7 +309,7 @@ def minha_conta(request):
         else:
             erro = 'formulario_invalido'
     context = {'erro': erro, 'alterado': alterado}
-    return render(request, 'usuario/minhaconta.html')
+    return render(request, 'usuario/minhaconta.html', context)
 
 
 def fazer_login(request):
@@ -385,10 +386,9 @@ def criar_conta(request):
 @login_required()
 def meus_pedidos(request):
     cliente = request.user.cliente
-    pedidos = Pedido.objects.filter(finalizado=True, cliente=cliente).order_by('-data_finalizacao')
-
+    pedidos = Pedido.objects.filter(finalizado=True, cliente=cliente).order_by("-data_finalizacao")
     context = {"pedidos": pedidos}
-    return render(request, 'meus_pedidos.html', context)
+    return render(request, "usuario/meus_pedidos.html", context)
 
 
 @login_required()
@@ -403,6 +403,7 @@ def gerenciar_loja(request):
     else:
         return redirect('loja')
     
+
 def exportar_relatorio(request, relatorio):
     if request.user.groups.filter(name='equipe').exists():
         if relatorio == "pedido":
