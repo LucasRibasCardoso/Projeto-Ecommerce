@@ -1,4 +1,5 @@
 # Réplica do E-commerce da Reserva
+[![NPM](https://img.shields.io/npm/l/react)](https://github.com/LucasRibasCardoso/Projeto-Ecommerce/blob/main/LICENSE) 
 
 Este é um projeto de réplica do e-commerce da Reserva, desenvolvido utilizando **Python**, **Django**, **MySQL**, **HTML**, **CSS**, e **JavaScript**. O objetivo deste projeto é simular um sistema de e-commerce com funcionalidades básicas, como gerenciamento de produtos, carrinho de compras, e sistema de checkout.
 
