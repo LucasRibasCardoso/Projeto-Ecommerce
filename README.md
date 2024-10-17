@@ -19,7 +19,6 @@ Este é um projeto de réplica do e-commerce da Reserva, desenvolvido utilizando
 - **MySQL**: Banco de dados relacional para armazenar as informações de produtos, usuários e pedidos.
 - **HTML/CSS**: Para criar a interface do usuário.
 - **JavaScript**: Para criação de funções e adição de parâmetros na URL para fazer a ordenação.
-- **
 
 ## 🎨 Capturas de Tela
 ![image](https://github.com/user-attachments/assets/c279f146-8a8c-48d6-8933-44bb02f581a9)
